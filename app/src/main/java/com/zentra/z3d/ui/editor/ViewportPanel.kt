@@ -94,7 +94,7 @@ class ViewportView(context: Context, val vm: EditorViewModel) : GLSurfaceView(co
                             val dy = ev.y - lastY
                             lastX = ev.x; lastY = ev.y
                             val s = 0.35f * vm.settings.orbitSensitivity
-                            vm.camera.orbit(dx * s, -dy * s)
+                            synchronized(vm.bridge.lock) { vm.camera.orbit(dx * s, -dy * s) }
                         }
                     }
                     Mode.MANIPULATE -> {
@@ -109,15 +109,15 @@ class ViewportView(context: Context, val vm: EditorViewModel) : GLSurfaceView(co
                         if (ev.pointerCount >= 2) {
                             val dist = fingerDistance(ev)
                             if (pinchDist > 1f && dist > 1f) {
-                                vm.camera.zoom(pinchDist / dist)
+                                synchronized(vm.bridge.lock) { vm.camera.zoom(pinchDist / dist) }
                             }
                             pinchDist = dist
                             val midX = (ev.getX(0) + ev.getX(1)) / 2f
                             val midY = (ev.getY(0) + ev.getY(1)) / 2f
-                            val wpp = synchronized(vm.bridge.lock) {
-                                vm.camera.worldPerPixel(vm.bridge.viewportH.toFloat())
+                            synchronized(vm.bridge.lock) {
+                                val wpp = vm.camera.worldPerPixel(vm.bridge.viewportH.toFloat())
+                                vm.camera.pan((midX - pinchMidX) * wpp, (midY - pinchMidY) * wpp)
                             }
-                            vm.camera.pan((midX - pinchMidX) * wpp, (midY - pinchMidY) * wpp)
                             pinchMidX = midX; pinchMidY = midY
                         }
                     }
@@ -125,7 +125,7 @@ class ViewportView(context: Context, val vm: EditorViewModel) : GLSurfaceView(co
                         if (ev.pointerCount >= 3) {
                             val cx = centroidX(ev, 3); val cy = centroidY(ev, 3)
                             val s = 0.35f * vm.settings.orbitSensitivity
-                            vm.camera.orbit((cx - lastX) * s, -(cy - lastY) * s)
+                            synchronized(vm.bridge.lock) { vm.camera.orbit((cx - lastX) * s, -(cy - lastY) * s) }
                             lastX = cx; lastY = cy
                         }
                     }

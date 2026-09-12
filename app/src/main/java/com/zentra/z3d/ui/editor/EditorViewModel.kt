@@ -249,7 +249,7 @@ class EditorViewModel(app: Application, projectIdArg: String) : AndroidViewModel
             aspect = bridge.viewportW.toFloat() / max(1, bridge.viewportH).toFloat()
             threshold = camera.worldPerPixel(bridge.viewportH.toFloat()) * 22f
         }
-        val ray = camera.rayFor(ndcX, ndcY, aspect)
+        val ray = synchronized(bridge.lock) { camera.rayFor(ndcX, ndcY, aspect) }
         if (objMode.value == ObjMode.EDIT) {
             val id = selection.value.lastOrNull() ?: return
             synchronized(bridge.lock) {
@@ -339,7 +339,7 @@ class EditorViewModel(app: Application, projectIdArg: String) : AndroidViewModel
             } else {
                 when (tool.value) {
                     Tool.MOVE -> {
-                        val (right, up) = camera.basis()
+                        val (right, up) = synchronized(bridge.lock) { camera.basis() }
                         val delta = right * (dxPx * wpp) + up * (-dyPx * wpp)
                         for (id in selection.value) {
                             val o = s.find(id) ?: continue
@@ -396,7 +396,7 @@ class EditorViewModel(app: Application, projectIdArg: String) : AndroidViewModel
         val id = selection.value.lastOrNull() ?: return
         val obj = s.find(id) ?: return
         val mesh = obj.mesh ?: return
-        val (right, up) = camera.basis()
+        val (right, up) = synchronized(bridge.lock) { camera.basis() }
         val worldDelta = right * (dxPx * wpp) + up * (-dyPx * wpp)
         val wm = s.worldMatrix(obj)
         val inv = wm.inverted() ?: return
@@ -911,7 +911,7 @@ class EditorViewModel(app: Application, projectIdArg: String) : AndroidViewModel
     // ---------- camera / vista ----------
 
     fun cameraPreset(name: String) {
-        camera.preset(name)
+        synchronized(bridge.lock) { camera.preset(name) }
     }
 
     fun focusSelected() {
