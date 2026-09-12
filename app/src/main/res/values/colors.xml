@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="zentra_bg">#0B0E17</color>
+    <color name="zentra_surface">#151A2B</color>
+    <color name="zentra_accent">#7C5CFF</color>
+    <color name="zentra_accent2">#38E1FF</color>
+    <color name="ic_launcher_background">#0B0E17</color>
+</resources>
