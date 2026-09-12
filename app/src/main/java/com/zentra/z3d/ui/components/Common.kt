@@ -55,15 +55,16 @@ fun ZentraPrimaryButton(
     enabled: Boolean = true
 ) {
     val shape = RoundedCornerShape(16.dp)
+    var boxMod = modifier.clip(shape)
+    boxMod = if (enabled) boxMod.background(ZentraColors.gradient, shape)
+    else boxMod.background(ZentraColors.surface3, shape)
     Box(
-        modifier = modifier
-            .clip(shape)
-            .background(if (enabled) ZentraColors.gradient else ZentraColors.surface3, shape)
+        modifier = boxMod
             .clickable(enabled = enabled, onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
-        Row(verticalAlignment = Alignment.Vertically, horizontalArrangement = Arrangement.Center) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             if (icon != null) {
                 Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(10.dp))
@@ -91,7 +92,7 @@ fun ZentraSecondaryButton(
             .padding(horizontal = 20.dp, vertical = 14.dp),
         contentAlignment = Alignment.Center
     ) {
-        Row(verticalAlignment = Alignment.Vertically, horizontalArrangement = Arrangement.Center) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
             if (icon != null) {
                 Icon(icon, contentDescription = null, tint = ZentraColors.textMain, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(10.dp))
