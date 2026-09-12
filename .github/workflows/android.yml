@@ -48,6 +48,14 @@ jobs:
           set -o pipefail
           gradle assembleRelease --stacktrace --no-daemon 2>&1 | tee /tmp/zentra-release.log
 
+      - name: Verify APK signatures
+        run: |
+          SDKROOT="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
+          APKSigner=$(find "$SDKROOT/build-tools" -name apksigner | head -1)
+          echo "apksigner: $APKSigner"
+          "$APKSigner" verify --print-certs app/build/outputs/apk/debug/*.apk
+          "$APKSigner" verify --print-certs app/build/outputs/apk/release/*.apk
+
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
@@ -58,7 +66,7 @@ jobs:
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
-          name: zentra-3d-release-unsigned
+          name: zentra-3d-release-signed
           path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 

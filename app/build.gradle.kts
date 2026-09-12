@@ -18,6 +18,9 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            // Release interno instalavel: assinado com a chave debug.
+            // Para publicar na Play Store, configure um keystore proprio e troque este signingConfig.
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
